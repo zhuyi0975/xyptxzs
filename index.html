@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>校园跑腿小助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+        .page {
+            display: none;
+            min-height: 100vh;
+            background-color: #fff;
+        }
+        .page.active {
+            display: block;
+        }
+        .nav-btn.active {
+            color: #ff6b6b;
+        }
+        .nav-btn.active .material-icons {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginPage" class="page active">
+        <div class="bg-gradient-to-br from-red-500 to-orange-400 pt-20 pb-16 px-6">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <span class="material-icons text-red-500 text-4xl">local_shipping</span>
+                </div>
+                <h1 class="text-2xl font-bold text-white mb-2">校园跑腿小助手</h1>
+                <p class="text-white/80">轻松点餐，快速送达</p>
+            </div>
+        </div>
+        <div class="px-6 -mt-8">
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-6 text-center">登录</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">手机号</label>
+                        <div class="relative">
+                            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">phone</span>
+                            <input type="tel" id="loginPhone" placeholder="请输入手机号" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                        <div class="relative">
+                            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">lock</span>
+                            <input type="password" id="loginPwd" placeholder="请输入密码" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent">
+                        </div>
+                    </div>
+                </div>
+                <button id="loginBtn" class="w-full mt-6 bg-gradient-to-r from-red-500 to-orange-400 text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all">
+                    登录
+                </button>
+                <p class="text-center mt-4 text-gray-500 text-sm">
+                    还没有账号？<a href="#" id="goRegister" class="text-red-500 font-medium">立即注册</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="registerPage" class="page">
+        <div class="bg-gradient-to-br from-red-500 to-orange-400 pt-16 pb-12 px-6">
+            <div class="flex items-center gap-3">
+                <button id="backToLogin" class="text-white">
+                    <span class="material-icons text-2xl">arrow_back</span>
+                </button>
+                <h1 class="text-xl font-bold text-white">注册账号</h1>
+            </div>
+        </div>
+        <div class="px-6 -mt-6">
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">手机号</label>
+                        <div class="relative">
+                            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">phone</span>
+                            <input type="tel" id="regPhone" placeholder="请输入手机号" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">密码</label>
+                        <div class="relative">
+                            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">lock</span>
+                            <input type="password" id="regPwd" placeholder="请输入密码" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">确认密码</label>
+                        <div class="relative">
+                            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">lock</span>
+                            <input type="password" id="regPwd2" placeholder="请再次输入密码" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">姓名</label>
+                        <div class="relative">
+                            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">person</span>
+                            <input type="text" id="regName" placeholder="请输入姓名" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent">
+                        </div>
+                    </div>
+                </div>
+                <button id="registerBtn" class="w-full mt-6 bg-gradient-to-r from-red-500 to-orange-400 text-white py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all">
+                    注册
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="rolePage" class="page">
+        <div class="bg-gradient-to-br from-red-500 to-orange-400 pt-20 pb-16 px-6">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <span class="material-icons text-red-500 text-4xl">local_shipping</span>
+                </div>
+                <h1 class="text-2xl font-bold text-white mb-2">校园跑腿小助手</h1>
+                <p class="text-white/80">选择您的身份</p>
+            </div>
+        </div>
+        <div class="px-6 -mt-8">
+            <div class="space-y-4">
+                <button id="userBtn" class="w-full bg-white rounded-2xl shadow-xl p-6 flex items-center gap-4 hover:shadow-2xl transition-all">
+                    <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center">
+                        <span class="material-icons text-green-500 text-3xl">person</span>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="text-lg font-semibold text-gray-800">我想点外卖</h3>
+                        <p class="text-sm text-gray-500">轻松点餐，坐等送达</p>
+                    </div>
+                    <span class="material-icons ml-auto text-gray-400">arrow_forward_ios</span>
+                </button>
+                <button id="riderBtn" class="w-full bg-white rounded-2xl shadow-xl p-6 flex items-center gap-4 hover:shadow-2xl transition-all">
+                    <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <span class="material-icons text-blue-500 text-3xl">motorcycle</span>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="text-lg font-semibold text-gray-800">成为外卖员</h3>
+                        <p class="text-sm text-gray-500">接单跑腿，赚取零花钱</p>
+                    </div>
+                    <span class="material-icons ml-auto text-gray-400">arrow_forward_ios</span>
+                </button>
+            </div>
+            <div class="mt-6 text-center">
+                <button id="logoutBtn" class="text-gray-500 text-sm">退出登录</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="orderPage" class="page">
+        <div class="bg-gradient-to-br from-red-500 to-orange-400 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-lg font-bold text-white">点餐</h1>
+                <div class="flex items-center gap-2 text-white">
+                    <span class="material-icons">shopping_cart</span>
+                    <span id="cartCount" class="bg-white text-red-500 text-xs px-2 py-1 rounded-full">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="px-6 py-4">
+            <div class="bg-gray-100 rounded-xl p-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="material-icons text-gray-400">search</span>
+                    <input type="text" id="searchInput" placeholder="搜索美食" class="bg-transparent flex-1 outline-none text-gray-700">
+                </div>
+            </div>
+            <div class="flex gap-3 overflow-x-auto pb-2">
+                <button class="category-btn active px-4 py-2 bg-red-500 text-white rounded-full text-sm whitespace-nowrap">全部</button>
+                <button class="category-btn px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm whitespace-nowrap">快餐</button>
+                <button class="category-btn px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm whitespace-nowrap">饮品</button>
+                <button class="category-btn px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm whitespace-nowrap">甜点</button>
+                <button class="category-btn px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm whitespace-nowrap">小吃</button>
+            </div>
+        </div>
+        <div class="px-6 pb-24">
+            <div id="foodList" class="space-y-4"></div>
+        </div>
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t px-6 py-4 flex items-center gap-4">
+            <div class="flex-1">
+                <div class="text-sm text-gray-500">合计</div>
+                <div class="text-xl font-bold text-red-500">¥<span id="totalPrice">0</span></div>
+            </div>
+            <button id="submitOrderBtn" class="bg-gradient-to-r from-red-500 to-orange-400 text-white px-8 py-3 rounded-xl font-medium">
+                去结算
+            </button>
+        </div>
+        <div class="fixed bottom-20 left-6 right-6 bg-white rounded-2xl shadow-xl p-4" id="cartPanel" style="display: none;">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold">购物车</h3>
+                <button id="closeCart" class="text-gray-400">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div id="cartItems" class="space-y-3 mb-4 max-h-48 overflow-y-auto"></div>
+            <div class="border-t pt-3 flex items-center justify-between">
+                <span>总计</span>
+                <span class="text-red-500 font-bold">¥<span id="cartTotal">0</span></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="riderPage" class="page">
+        <div class="bg-gradient-to-br from-blue-500 to-cyan-400 px-6 py-4">
+            <h1 class="text-lg font-bold text-white">接单中心</h1>
+        </div>
+        <div class="px-6 py-4">
+            <div class="bg-blue-50 rounded-xl p-4 mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600">今日接单</span>
+                    <span class="text-blue-600 font-bold">0</span>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-gray-600">今日收入</span>
+                    <span class="text-blue-600 font-bold">¥0</span>
+                </div>
+            </div>
+            <div id="orderList" class="space-y-4"></div>
+            <div class="text-center text-gray-400 py-8" id="emptyOrder">
+                <span class="material-icons text-4xl mb-2">inbox</span>
+                <p>暂无待接订单</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="profilePage" class="page">
+        <div class="bg-gradient-to-br from-red-500 to-orange-400 pt-16 pb-20 px-6">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg">
+                    <span class="material-icons text-red-500 text-3xl">person</span>
+                </div>
+                <div>
+                    <h2 id="userName" class="text-xl font-bold text-white">用户昵称</h2>
+                    <p id="userPhone" class="text-white/80 text-sm">138****8888</p>
+                </div>
+            </div>
+        </div>
+        <div class="px-6 -mt-12">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="p-4 border-b flex items-center justify-between">
+                    <span>我的订单</span>
+                    <span class="text-gray-400">查看全部</span>
+                </div>
+                <div class="grid grid-cols-4 p-4">
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-red-500">0</div>
+                        <div class="text-xs text-gray-500">待付款</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-orange-500">0</div>
+                        <div class="text-xs text-gray-500">待接单</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-blue-500">0</div>
+                        <div class="text-xs text-gray-500">配送中</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xl font-bold text-green-500">0</div>
+                        <div class="text-xs text-gray-500">已完成</div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-xl mt-4 overflow-hidden">
+                <div class="p-4 border-b flex items-center gap-3">
+                    <span class="material-icons text-gray-400">credit_card</span>
+                    <span>钱包余额</span>
+                    <span class="ml-auto text-red-500 font-bold">¥0.00</span>
+                </div>
+                <div class="p-4 border-b flex items-center gap-3">
+                    <span class="material-icons text-gray-400">star</span>
+                    <span>我的评价</span>
+                    <span class="material-icons ml-auto text-gray-400">arrow_forward_ios</span>
+                </div>
+                <div class="p-4 border-b flex items-center gap-3">
+                    <span class="material-icons text-gray-400">help</span>
+                    <span>帮助中心</span>
+                    <span class="material-icons ml-auto text-gray-400">arrow_forward_ios</span>
+                </div>
+                <div class="p-4 flex items-center gap-3">
+                    <span class="material-icons text-gray-400">settings</span>
+                    <span>设置</span>
+                    <span class="material-icons ml-auto text-gray-400">arrow_forward_ios</span>
+                </div>
+            </div>
+            <button id="logoutBtn2" class="w-full mt-4 bg-gray-100 text-gray-600 py-3 rounded-xl">
+                退出登录
+            </button>
+        </div>
+    </div>
+
+    <div id="bottomNav" class="fixed bottom-0 left-0 right-0 bg-white border-t flex items-center justify-around py-2" style="display: none;">
+        <button class="nav-btn flex flex-col items-center gap-1 px-4 py-1" data-page="orderPage">
+            <span class="material-icons text-base">store</span>
+            <span class="text-xs">点餐</span>
+        </button>
+        <button class="nav-btn flex flex-col items-center gap-1 px-4 py-1" data-page="riderPage">
+            <span class="material-icons text-base">motorcycle</span>
+            <span class="text-xs">接单</span>
+        </button>
+        <button class="nav-btn flex flex-col items-center gap-1 px-4 py-1" data-page="profilePage">
+            <span class="material-icons text-base">person</span>
+            <span class="text-xs">我的</span>
+        </button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
