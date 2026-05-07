@@ -1,43 +1,59 @@
 const foodData = [
-    { id: 1, name: '黄焖鸡米饭', price: 18, category: '快餐', image: '🍗' },
-    { id: 2, name: '麻辣香锅', price: 25, category: '快餐', image: '🌶️' },
-    { id: 3, name: '芝士焗饭', price: 22, category: '快餐', image: '🍛' },
-    { id: 4, name: '珍珠奶茶', price: 12, category: '饮品', image: '🧋' },
-    { id: 5, name: '柠檬茶', price: 10, category: '饮品', image: '🍋' },
-    { id: 6, name: '草莓蛋糕', price: 18, category: '甜点', image: '🍰' },
-    { id: 7, name: '提拉米苏', price: 20, category: '甜点', image: '🍮' },
-    { id: 8, name: '炸鸡', price: 28, category: '小吃', image: '🍟' },
-    { id: 9, name: '烤肠', price: 6, category: '小吃', image: '🌭' },
-    { id: 10, name: '牛肉面', price: 20, category: '快餐', image: '🍜' },
-    { id: 11, name: '冰咖啡', price: 15, category: '饮品', image: '☕' },
-    { id: 12, name: '蛋挞', price: 8, category: '甜点', image: '🥚' },
+    { id: 1, name: '黄焖鸡米饭', price: 18, category: '快餐', image: '🍗', rating: 4.8, sales: 1280, shopName: '美味小吃店' },
+    { id: 2, name: '麻辣香锅', price: 25, category: '快餐', image: '🌶️', rating: 4.9, sales: 856, shopName: '川味轩' },
+    { id: 3, name: '芝士焗饭', price: 22, category: '快餐', image: '🍛', rating: 4.7, sales: 567, shopName: '西式简餐' },
+    { id: 4, name: '珍珠奶茶', price: 12, category: '饮品', image: '🧋', rating: 4.6, sales: 2340, shopName: '茶颜悦色' },
+    { id: 5, name: '柠檬茶', price: 10, category: '饮品', image: '🍋', rating: 4.5, sales: 1890, shopName: '果茶坊' },
+    { id: 6, name: '草莓蛋糕', price: 18, category: '甜点', image: '🍰', rating: 4.9, sales: 678, shopName: '甜蜜时光' },
+    { id: 7, name: '提拉米苏', price: 20, category: '甜点', image: '🍮', rating: 4.8, sales: 432, shopName: '甜蜜时光' },
+    { id: 8, name: '炸鸡', price: 28, category: '小吃', image: '🍟', rating: 4.7, sales: 1567, shopName: '肯德基' },
+    { id: 9, name: '烤肠', price: 6, category: '小吃', image: '🌭', rating: 4.4, sales: 3450, shopName: '小吃摊' },
+    { id: 10, name: '牛肉面', price: 20, category: '快餐', image: '🍜', rating: 4.6, sales: 987, shopName: '兰州拉面' },
+    { id: 11, name: '冰咖啡', price: 15, category: '饮品', image: '☕', rating: 4.5, sales: 765, shopName: '瑞幸咖啡' },
+    { id: 12, name: '蛋挞', price: 8, category: '甜点', image: '🥚', rating: 4.7, sales: 2345, shopName: '甜蜜时光' },
+    { id: 13, name: '汉堡套餐', price: 35, category: '快餐', image: '🍔', rating: 4.8, sales: 1678, shopName: '麦当劳' },
+    { id: 14, name: '寿司拼盘', price: 45, category: '快餐', image: '🍣', rating: 4.9, sales: 345, shopName: '日式料理' },
+    { id: 15, name: '冰淇淋', price: 12, category: '甜点', image: '🍦', rating: 4.6, sales: 1234, shopName: '蜜雪冰城' },
 ];
 
 const mockOrders = [
-    { id: 1, foodName: '黄焖鸡米饭', price: 18, address: '男生宿舍3号楼', phone: '138****1234', status: 'waiting' },
-    { id: 2, foodName: '麻辣香锅+珍珠奶茶', price: 37, address: '女生宿舍5号楼', phone: '139****5678', status: 'waiting' },
-    { id: 3, foodName: '芝士焗饭', price: 22, address: '图书馆', phone: '137****9012', status: 'waiting' },
+    { id: 1, foodName: '黄焖鸡米饭 x1', price: 18, address: '男生宿舍3号楼 301', phone: '138****1234', status: 'waiting', distance: '0.5km', tips: 2 },
+    { id: 2, foodName: '麻辣香锅 x1 + 珍珠奶茶 x2', price: 49, address: '女生宿舍5号楼 205', phone: '139****5678', status: 'waiting', distance: '0.8km', tips: 3 },
+    { id: 3, foodName: '芝士焗饭 x1', price: 22, address: '图书馆二楼A区', phone: '137****9012', status: 'waiting', distance: '1.2km', tips: 2 },
+    { id: 4, foodName: '炸鸡套餐 x1', price: 28, address: '教学楼C座101', phone: '136****3456', status: 'waiting', distance: '0.6km', tips: 4 },
+    { id: 5, foodName: '草莓蛋糕 x2', price: 36, address: '研究生宿舍1号楼 402', phone: '135****7890', status: 'waiting', distance: '1.0km', tips: 3 },
 ];
 
 let users = [];
 let currentUser = null;
 let cart = [];
+let orders = [];
+let userOrders = [];
+let riderStats = { todayOrders: 0, todayIncome: 0, totalBalance: 0 };
+let transactions = [];
+let merchants = [];
+let selectedRechargeAmount = 0;
 
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
     
-    if (pageId === 'orderPage' || pageId === 'riderPage' || pageId === 'profilePage') {
-        document.getElementById('bottomNav').style.display = 'flex';
+    const bottomNav = document.getElementById('bottomNav');
+    if (['orderPage', 'riderPage', 'profilePage'].includes(pageId)) {
+        bottomNav.style.display = 'flex';
         updateNavActive(pageId);
     } else {
-        document.getElementById('bottomNav').style.display = 'none';
+        bottomNav.style.display = 'none';
     }
 }
 
 function updateNavActive(pageId) {
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.page === pageId) {
+            btn.classList.add('active');
+        }
+    });
 }
 
 function saveUsers() {
@@ -70,6 +86,64 @@ function loadCurrentUser() {
     const saved = localStorage.getItem('campusCurrentUser');
     if (saved) {
         currentUser = JSON.parse(saved);
+    }
+}
+
+function saveOrders() {
+    localStorage.setItem('campusOrders', JSON.stringify(orders));
+}
+
+function loadOrders() {
+    const saved = localStorage.getItem('campusOrders');
+    if (saved) {
+        orders = JSON.parse(saved);
+    } else {
+        orders = [...mockOrders];
+        saveOrders();
+    }
+}
+
+function saveUserOrders() {
+    localStorage.setItem('campusUserOrders', JSON.stringify(userOrders));
+}
+
+function loadUserOrders() {
+    const saved = localStorage.getItem('campusUserOrders');
+    if (saved) {
+        userOrders = JSON.parse(saved);
+    }
+}
+
+function saveRiderStats() {
+    localStorage.setItem('campusRiderStats', JSON.stringify(riderStats));
+}
+
+function loadRiderStats() {
+    const saved = localStorage.getItem('campusRiderStats');
+    if (saved) {
+        riderStats = JSON.parse(saved);
+    }
+}
+
+function saveTransactions() {
+    localStorage.setItem('campusTransactions', JSON.stringify(transactions));
+}
+
+function loadTransactions() {
+    const saved = localStorage.getItem('campusTransactions');
+    if (saved) {
+        transactions = JSON.parse(saved);
+    }
+}
+
+function saveMerchants() {
+    localStorage.setItem('campusMerchants', JSON.stringify(merchants));
+}
+
+function loadMerchants() {
+    const saved = localStorage.getItem('campusMerchants');
+    if (saved) {
+        merchants = JSON.parse(saved);
     }
 }
 
@@ -139,19 +213,38 @@ function showToast(message) {
     setTimeout(() => toast.remove(), 2000);
 }
 
+function renderStars(rating) {
+    let stars = '';
+    const fullStars = Math.floor(rating);
+    for (let i = 0; i < fullStars; i++) {
+        stars += '★';
+    }
+    return stars;
+}
+
 function renderFoodList(category = '全部') {
     const foodList = document.getElementById('foodList');
     const filtered = category === '全部' ? foodData : foodData.filter(item => item.category === category);
     
     foodList.innerHTML = filtered.map(food => `
         <div class="bg-white rounded-2xl shadow-lg p-4 flex gap-4">
-            <div class="text-4xl">${food.image}</div>
+            <div class="text-5xl">${food.image}</div>
             <div class="flex-1">
-                <h3 class="font-semibold text-gray-800">${food.name}</h3>
-                <p class="text-sm text-gray-500">${food.category}</p>
-                <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-gray-800">${food.name}</h3>
+                </div>
+                <p class="text-xs text-gray-500 mb-1">${food.shopName}</p>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-yellow-500 text-sm">${renderStars(food.rating)}</span>
+                    <span class="text-xs text-gray-400">${food.rating}</span>
+                    <span class="text-xs text-gray-400">|</span>
+                    <span class="text-xs text-gray-400">月售${food.sales}+</span>
+                </div>
+                <div class="flex items-center justify-between">
                     <span class="text-red-500 font-bold">¥${food.price}</span>
-                    <button onclick="addToCart(${JSON.stringify(food).replace(/"/g, '&quot;')})" class="bg-red-500 text-white px-4 py-1.5 rounded-full text-sm">加入购物车</button>
+                    <button onclick="addToCart(${JSON.stringify(food).replace(/"/g, '&quot;')})" class="bg-red-500 text-white px-4 py-1.5 rounded-full text-sm">
+                        <span class="material-icons text-sm">add</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -162,14 +255,16 @@ function renderOrderList() {
     const orderList = document.getElementById('orderList');
     const emptyOrder = document.getElementById('emptyOrder');
     
-    if (mockOrders.length === 0) {
+    const waitingOrders = orders.filter(o => o.status === 'waiting');
+    
+    if (waitingOrders.length === 0) {
         orderList.innerHTML = '';
         emptyOrder.style.display = 'block';
         return;
     }
     
     emptyOrder.style.display = 'none';
-    orderList.innerHTML = mockOrders.map(order => `
+    orderList.innerHTML = waitingOrders.map(order => `
         <div class="bg-white rounded-2xl shadow-lg p-4">
             <div class="flex items-center justify-between mb-3">
                 <span class="font-semibold">订单 #${order.id}</span>
@@ -180,12 +275,18 @@ function renderOrderList() {
                 <span class="material-icons text-xs">location_on</span>
                 <span>${order.address}</span>
             </div>
+            <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                <span class="material-icons text-xs">directions_walk</span>
+                <span>${order.distance}</span>
+            </div>
             <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
                 <span class="material-icons text-xs">phone</span>
                 <span>${order.phone}</span>
             </div>
             <div class="flex items-center justify-between">
-                <span class="text-red-500 font-bold">¥${order.price}</span>
+                <div>
+                    <span class="text-red-500 font-bold">配送费 ¥${order.tips}</span>
+                </div>
                 <button onclick="acceptOrder(${order.id})" class="bg-blue-500 text-white px-6 py-2 rounded-xl text-sm">
                     接单
                 </button>
@@ -195,33 +296,101 @@ function renderOrderList() {
 }
 
 function acceptOrder(orderId) {
-    const order = mockOrders.find(o => o.id === orderId);
+    const order = orders.find(o => o.id === orderId);
     if (order) {
         order.status = 'accepted';
+        riderStats.todayOrders++;
+        riderStats.todayIncome += order.tips;
+        riderStats.totalBalance += order.tips;
+        saveOrders();
+        saveRiderStats();
+        updateRiderStats();
         showToast('接单成功！');
         renderOrderList();
     }
+}
+
+function updateRiderStats() {
+    document.getElementById('todayOrders').textContent = riderStats.todayOrders;
+    document.getElementById('todayIncome').textContent = `¥${riderStats.todayIncome}`;
+    document.getElementById('riderBalance').textContent = `¥${riderStats.totalBalance.toFixed(2)}`;
 }
 
 function updateProfile() {
     if (currentUser) {
         document.getElementById('userName').textContent = currentUser.name;
         document.getElementById('userPhone').textContent = currentUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+        updateBalanceDisplay();
+        updateOrderStats();
     }
+}
+
+function updateBalanceDisplay() {
+    const balance = currentUser ? (currentUser.balance || 0) : 0;
+    document.getElementById('profileBalance').textContent = `¥${balance.toFixed(2)}`;
+    document.getElementById('walletBalance').textContent = balance.toFixed(2);
+}
+
+function updateOrderStats() {
+    const unpaid = userOrders.filter(o => o.status === 'unpaid').length;
+    const pending = userOrders.filter(o => o.status === 'pending').length;
+    const delivering = userOrders.filter(o => o.status === 'delivering').length;
+    const completed = userOrders.filter(o => o.status === 'completed').length;
+    
+    document.getElementById('statUnpaid').textContent = unpaid;
+    document.getElementById('statPending').textContent = pending;
+    document.getElementById('statDelivering').textContent = delivering;
+    document.getElementById('statCompleted').textContent = completed;
+}
+
+function renderTransactions() {
+    const transactionList = document.getElementById('transactionList');
+    if (transactions.length === 0) {
+        transactionList.innerHTML = '<p class="text-center text-gray-400 py-4">暂无交易记录</p>';
+        return;
+    }
+    
+    transactionList.innerHTML = transactions.slice(-10).reverse().map(t => `
+        <div class="bg-gray-50 rounded-xl p-3 flex items-center justify-between">
+            <div>
+                <div class="font-medium text-sm">${t.type}</div>
+                <div class="text-xs text-gray-400">${t.date}</div>
+            </div>
+            <div class="${t.amount > 0 ? 'text-green-500' : 'text-red-500'} font-semibold">
+                ${t.amount > 0 ? '+' : ''}¥${t.amount.toFixed(2)}
+            </div>
+        </div>
+    `).join('');
+}
+
+function addTransaction(type, amount) {
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    
+    transactions.push({
+        type,
+        amount,
+        date: dateStr
+    });
+    
+    saveTransactions();
+    renderTransactions();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
     loadCart();
     loadCurrentUser();
-    
-    if (currentUser) {
-        showPage('rolePage');
-    }
-    
+    loadOrders();
+    loadUserOrders();
+    loadRiderStats();
+    loadTransactions();
+    loadMerchants();
+
     updateCartUI();
     renderFoodList();
     renderOrderList();
+    updateRiderStats();
     updateProfile();
 
     document.getElementById('loginBtn').addEventListener('click', () => {
@@ -274,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        const newUser = { phone, password: pwd, name };
+        const newUser = { phone, password: pwd, name, balance: 0 };
         users.push(newUser);
         saveUsers();
         showToast('注册成功');
@@ -287,6 +456,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('riderBtn').addEventListener('click', () => {
         showPage('riderPage');
+    });
+
+    document.getElementById('merchantBtn').addEventListener('click', () => {
+        showPage('merchantPage');
     });
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -310,8 +483,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.category-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.add('bg-gray-100', 'text-gray-600'));
+            document.querySelectorAll('.category-btn').forEach(b => {
+                b.classList.remove('active', 'bg-red-500', 'text-white');
+                b.classList.add('bg-gray-100', 'text-gray-600');
+            });
             btn.classList.add('active', 'bg-red-500', 'text-white');
             btn.classList.remove('bg-gray-100', 'text-gray-600');
             renderFoodList(btn.textContent);
@@ -320,7 +495,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('searchInput').addEventListener('input', (e) => {
         const keyword = e.target.value.toLowerCase();
-        const filtered = foodData.filter(item => item.name.toLowerCase().includes(keyword));
+        const filtered = foodData.filter(item => 
+            item.name.toLowerCase().includes(keyword) || 
+            item.shopName.toLowerCase().includes(keyword)
+        );
         const foodList = document.getElementById('foodList');
         
         if (filtered.length === 0) {
@@ -330,13 +508,23 @@ document.addEventListener('DOMContentLoaded', () => {
         
         foodList.innerHTML = filtered.map(food => `
             <div class="bg-white rounded-2xl shadow-lg p-4 flex gap-4">
-                <div class="text-4xl">${food.image}</div>
+                <div class="text-5xl">${food.image}</div>
                 <div class="flex-1">
-                    <h3 class="font-semibold text-gray-800">${food.name}</h3>
-                    <p class="text-sm text-gray-500">${food.category}</p>
-                    <div class="flex items-center justify-between mt-2">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-semibold text-gray-800">${food.name}</h3>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-1">${food.shopName}</p>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-yellow-500 text-sm">${renderStars(food.rating)}</span>
+                        <span class="text-xs text-gray-400">${food.rating}</span>
+                        <span class="text-xs text-gray-400">|</span>
+                        <span class="text-xs text-gray-400">月售${food.sales}+</span>
+                    </div>
+                    <div class="flex items-center justify-between">
                         <span class="text-red-500 font-bold">¥${food.price}</span>
-                        <button onclick="addToCart(${JSON.stringify(food).replace(/"/g, '&quot;')})" class="bg-red-500 text-white px-4 py-1.5 rounded-full text-sm">加入购物车</button>
+                        <button onclick="addToCart(${JSON.stringify(food).replace(/"/g, '&quot;')})" class="bg-red-500 text-white px-4 py-1.5 rounded-full text-sm">
+                            <span class="material-icons text-sm">add</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -357,10 +545,144 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('购物车为空');
             return;
         }
-        showToast('订单提交成功，等待骑手接单');
+        
+        const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        
+        if (currentUser && currentUser.balance < totalAmount) {
+            showToast('余额不足，请先充值');
+            return;
+        }
+        
+        if (currentUser) {
+            currentUser.balance -= totalAmount;
+            saveUsers();
+            saveCurrentUser(currentUser);
+            addTransaction('订单支付', -totalAmount);
+            updateBalanceDisplay();
+        }
+        
+        const newOrder = {
+            id: orders.length + 1,
+            foodName: cart.map(item => `${item.name} x${item.quantity}`).join(' + '),
+            price: totalAmount,
+            address: '用户地址',
+            phone: currentUser ? currentUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '138****8888',
+            status: 'waiting',
+            distance: Math.random() > 0.5 ? '0.8km' : '1.2km',
+            tips: Math.floor(Math.random() * 3) + 2
+        };
+        
+        orders.push(newOrder);
+        saveOrders();
+        
         cart = [];
         saveCart();
         updateCartUI();
         document.getElementById('cartPanel').style.display = 'none';
+        showToast('订单提交成功，等待骑手接单');
+    });
+
+    document.getElementById('refreshOrders').addEventListener('click', () => {
+        renderOrderList();
+        showToast('已刷新订单列表');
+    });
+
+    document.getElementById('openWallet').addEventListener('click', () => {
+        renderTransactions();
+        showPage('walletPage');
+    });
+
+    document.getElementById('backFromWallet').addEventListener('click', () => {
+        showPage('profilePage');
+    });
+
+    document.querySelectorAll('.recharge-amount').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.recharge-amount').forEach(b => {
+                b.classList.remove('border-red-500', 'bg-red-50');
+                b.classList.add('border-gray-200');
+            });
+            btn.classList.add('border-red-500', 'bg-red-50');
+            btn.classList.remove('border-gray-200');
+            selectedRechargeAmount = parseInt(btn.dataset.amount);
+        });
+    });
+
+    document.getElementById('confirmRecharge').addEventListener('click', () => {
+        if (selectedRechargeAmount <= 0) {
+            showToast('请选择充值金额');
+            return;
+        }
+        
+        if (!currentUser) {
+            showToast('请先登录');
+            return;
+        }
+        
+        currentUser.balance = (currentUser.balance || 0) + selectedRechargeAmount;
+        
+        const userIndex = users.findIndex(u => u.phone === currentUser.phone);
+        if (userIndex !== -1) {
+            users[userIndex] = currentUser;
+        }
+        
+        saveUsers();
+        saveCurrentUser(currentUser);
+        addTransaction('账户充值', selectedRechargeAmount);
+        updateBalanceDisplay();
+        updateProfile();
+        showToast(`充值成功！+¥${selectedRechargeAmount}`);
+        
+        selectedRechargeAmount = 0;
+        document.querySelectorAll('.recharge-amount').forEach(b => {
+            b.classList.remove('border-red-500', 'bg-red-50');
+            b.classList.add('border-gray-200');
+        });
+    });
+
+    document.getElementById('backFromMerchant').addEventListener('click', () => {
+        showPage('rolePage');
+    });
+
+    document.getElementById('submitMerchant').addEventListener('click', () => {
+        const shopName = document.getElementById('shopName').value;
+        const shopType = document.getElementById('shopType').value;
+        const shopAddress = document.getElementById('shopAddress').value;
+        const shopPhone = document.getElementById('shopPhone').value;
+        const shopLicense = document.getElementById('shopLicense').value;
+        const shopDesc = document.getElementById('shopDesc').value;
+        
+        if (!shopName || !shopType || !shopAddress || !shopPhone || !shopLicense) {
+            showToast('请填写完整信息');
+            return;
+        }
+        
+        const newMerchant = {
+            id: merchants.length + 1,
+            shopName,
+            shopType,
+            shopAddress,
+            shopPhone,
+            shopLicense,
+            shopDesc,
+            userId: currentUser ? currentUser.phone : null,
+            status: 'pending',
+            createdAt: new Date().toISOString()
+        };
+        
+        merchants.push(newMerchant);
+        saveMerchants();
+        
+        document.getElementById('shopName').value = '';
+        document.getElementById('shopType').value = '';
+        document.getElementById('shopAddress').value = '';
+        document.getElementById('shopPhone').value = '';
+        document.getElementById('shopLicense').value = '';
+        document.getElementById('shopDesc').value = '';
+        
+        showToast('申请已提交，等待审核');
+        setTimeout(() => {
+            showPage('rolePage');
+        }, 1500);
     });
 });

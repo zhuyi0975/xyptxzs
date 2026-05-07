@@ -28,6 +28,9 @@
         .nav-btn.active .material-icons {
             color: #ff6b6b;
         }
+        .rating-stars {
+            color: #ffd700;
+        }
     </style>
 </head>
 <body>
@@ -150,6 +153,16 @@
                     </div>
                     <span class="material-icons ml-auto text-gray-400">arrow_forward_ios</span>
                 </button>
+                <button id="merchantBtn" class="w-full bg-white rounded-2xl shadow-xl p-6 flex items-center gap-4 hover:shadow-2xl transition-all">
+                    <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <span class="material-icons text-purple-500 text-3xl">storefront</span>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="text-lg font-semibold text-gray-800">申请开店</h3>
+                        <p class="text-sm text-gray-500">入驻平台，成为商家</p>
+                    </div>
+                    <span class="material-icons ml-auto text-gray-400">arrow_forward_ios</span>
+                </button>
             </div>
             <div class="mt-6 text-center">
                 <button id="logoutBtn" class="text-gray-500 text-sm">退出登录</button>
@@ -211,17 +224,26 @@
 
     <div id="riderPage" class="page">
         <div class="bg-gradient-to-br from-blue-500 to-cyan-400 px-6 py-4">
-            <h1 class="text-lg font-bold text-white">接单中心</h1>
+            <div class="flex items-center justify-between">
+                <h1 class="text-lg font-bold text-white">接单中心</h1>
+                <button id="refreshOrders" class="text-white">
+                    <span class="material-icons">refresh</span>
+                </button>
+            </div>
         </div>
         <div class="px-6 py-4">
             <div class="bg-blue-50 rounded-xl p-4 mb-4">
                 <div class="flex items-center justify-between">
                     <span class="text-gray-600">今日接单</span>
-                    <span class="text-blue-600 font-bold">0</span>
+                    <span class="text-blue-600 font-bold" id="todayOrders">0</span>
                 </div>
                 <div class="flex items-center justify-between mt-2">
                     <span class="text-gray-600">今日收入</span>
-                    <span class="text-blue-600 font-bold">¥0</span>
+                    <span class="text-blue-600 font-bold" id="todayIncome">¥0</span>
+                </div>
+                <div class="flex items-center justify-between mt-2">
+                    <span class="text-gray-600">我的余额</span>
+                    <span class="text-blue-600 font-bold" id="riderBalance">¥0</span>
                 </div>
             </div>
             <div id="orderList" class="space-y-4"></div>
@@ -252,28 +274,29 @@
                 </div>
                 <div class="grid grid-cols-4 p-4">
                     <div class="text-center">
-                        <div class="text-xl font-bold text-red-500">0</div>
+                        <div class="text-xl font-bold text-red-500" id="statUnpaid">0</div>
                         <div class="text-xs text-gray-500">待付款</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-xl font-bold text-orange-500">0</div>
+                        <div class="text-xl font-bold text-orange-500" id="statPending">0</div>
                         <div class="text-xs text-gray-500">待接单</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-xl font-bold text-blue-500">0</div>
+                        <div class="text-xl font-bold text-blue-500" id="statDelivering">0</div>
                         <div class="text-xs text-gray-500">配送中</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-xl font-bold text-green-500">0</div>
+                        <div class="text-xl font-bold text-green-500" id="statCompleted">0</div>
                         <div class="text-xs text-gray-500">已完成</div>
                     </div>
                 </div>
             </div>
             <div class="bg-white rounded-2xl shadow-xl mt-4 overflow-hidden">
-                <div class="p-4 border-b flex items-center gap-3">
+                <div class="p-4 border-b flex items-center gap-3 cursor-pointer" id="openWallet">
                     <span class="material-icons text-gray-400">credit_card</span>
                     <span>钱包余额</span>
-                    <span class="ml-auto text-red-500 font-bold">¥0.00</span>
+                    <span class="ml-auto text-red-500 font-bold" id="profileBalance">¥0.00</span>
+                    <span class="material-icons text-gray-400">arrow_forward_ios</span>
                 </div>
                 <div class="p-4 border-b flex items-center gap-3">
                     <span class="material-icons text-gray-400">star</span>
@@ -293,6 +316,121 @@
             </div>
             <button id="logoutBtn2" class="w-full mt-4 bg-gray-100 text-gray-600 py-3 rounded-xl">
                 退出登录
+            </button>
+        </div>
+    </div>
+
+    <div id="walletPage" class="page">
+        <div class="bg-gradient-to-br from-red-500 to-orange-400 px-6 py-4">
+            <div class="flex items-center gap-3">
+                <button id="backFromWallet" class="text-white">
+                    <span class="material-icons text-2xl">arrow_back</span>
+                </button>
+                <h1 class="text-lg font-bold text-white">我的钱包</h1>
+            </div>
+        </div>
+        <div class="px-6 py-6">
+            <div class="bg-gradient-to-br from-red-500 to-orange-400 rounded-2xl p-6 text-white mb-6">
+                <div class="text-sm opacity-80 mb-2">账户余额</div>
+                <div class="text-4xl font-bold mb-4">¥<span id="walletBalance">0.00</span></div>
+                <div class="flex gap-4">
+                    <button id="rechargeBtn" class="bg-white text-red-500 px-6 py-2 rounded-xl font-medium">
+                        充值
+                    </button>
+                    <button class="bg-white/20 text-white px-6 py-2 rounded-xl font-medium">
+                        提现
+                    </button>
+                </div>
+            </div>
+            <h3 class="font-semibold text-gray-800 mb-4">充值金额</h3>
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <button class="recharge-amount p-4 border-2 border-gray-200 rounded-xl text-center" data-amount="10">
+                    <div class="text-lg font-bold">¥10</div>
+                </button>
+                <button class="recharge-amount p-4 border-2 border-gray-200 rounded-xl text-center" data-amount="20">
+                    <div class="text-lg font-bold">¥20</div>
+                </button>
+                <button class="recharge-amount p-4 border-2 border-gray-200 rounded-xl text-center" data-amount="50">
+                    <div class="text-lg font-bold">¥50</div>
+                </button>
+                <button class="recharge-amount p-4 border-2 border-gray-200 rounded-xl text-center" data-amount="100">
+                    <div class="text-lg font-bold">¥100</div>
+                </button>
+                <button class="recharge-amount p-4 border-2 border-gray-200 rounded-xl text-center" data-amount="200">
+                    <div class="text-lg font-bold">¥200</div>
+                </button>
+                <button class="recharge-amount p-4 border-2 border-gray-200 rounded-xl text-center" data-amount="500">
+                    <div class="text-lg font-bold">¥500</div>
+                </button>
+            </div>
+            <button id="confirmRecharge" class="w-full bg-gradient-to-r from-red-500 to-orange-400 text-white py-3 rounded-xl font-medium">
+                确认充值
+            </button>
+            <h3 class="font-semibold text-gray-800 mt-8 mb-4">交易记录</h3>
+            <div id="transactionList" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <div id="merchantPage" class="page">
+        <div class="bg-gradient-to-br from-purple-500 to-pink-400 px-6 py-4">
+            <div class="flex items-center gap-3">
+                <button id="backFromMerchant" class="text-white">
+                    <span class="material-icons text-2xl">arrow_back</span>
+                </button>
+                <h1 class="text-lg font-bold text-white">申请开店</h1>
+            </div>
+        </div>
+        <div class="px-6 py-6">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">店铺名称</label>
+                    <div class="relative">
+                        <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">store</span>
+                        <input type="text" id="shopName" placeholder="请输入店铺名称" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">店铺类型</label>
+                    <div class="relative">
+                        <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">category</span>
+                        <select id="shopType" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent appearance-none bg-white">
+                            <option value="">请选择店铺类型</option>
+                            <option value="快餐">快餐</option>
+                            <option value="饮品">饮品</option>
+                            <option value="甜点">甜点</option>
+                            <option value="小吃">小吃</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">店铺地址</label>
+                    <div class="relative">
+                        <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">location_on</span>
+                        <input type="text" id="shopAddress" placeholder="请输入店铺地址" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">联系电话</label>
+                    <div class="relative">
+                        <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">phone</span>
+                        <input type="tel" id="shopPhone" placeholder="请输入联系电话" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">营业执照号</label>
+                    <div class="relative">
+                        <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">assignment</span>
+                        <input type="text" id="shopLicense" placeholder="请输入营业执照号" class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">店铺简介</label>
+                    <textarea id="shopDesc" placeholder="请输入店铺简介" rows="4" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent"></textarea>
+                </div>
+            </div>
+            <button id="submitMerchant" class="w-full mt-6 bg-gradient-to-br from-purple-500 to-pink-400 text-white py-3 rounded-xl font-medium">
+                提交申请
             </button>
         </div>
     </div>
