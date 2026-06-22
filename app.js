@@ -202,6 +202,37 @@ function addToCart(food) {
     }
     saveCart();
     updateCartUI();
+    
+    // 检查是否已有待付款订单，没有则创建
+    if (currentUser) {
+        const hasUnpaidOrder = userOrders.some(o => o.status === 'unpaid' && o.userId === currentUser.phone);
+        if (!hasUnpaidOrder && cart.length > 0) {
+            const unpaidOrder = {
+                id: Date.now(),
+                foodName: cart.map(item => `${item.name} x${item.quantity}`).join(' + '),
+                price: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+                address: '用户地址',
+                phone: currentUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'),
+                status: 'unpaid',
+                distance: '0km',
+                tips: 0,
+                userId: currentUser.phone
+            };
+            userOrders.push(unpaidOrder);
+            saveUserOrders();
+            updateOrderStats();
+        } else if (hasUnpaidOrder) {
+            // 更新现有待付款订单信息
+            const unpaidOrder = userOrders.find(o => o.status === 'unpaid' && o.userId === currentUser.phone);
+            if (unpaidOrder) {
+                unpaidOrder.foodName = cart.map(item => `${item.name} x${item.quantity}`).join(' + ');
+                unpaidOrder.price = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                saveUserOrders();
+                updateOrderStats();
+            }
+        }
+    }
+    
     showToast('已添加到购物车');
 }
 
@@ -220,6 +251,128 @@ function renderStars(rating) {
         stars += '★';
     }
     return stars;
+}
+
+function getStatusText(status) {
+    const statusMap = {
+        'unpaid': '待付款',
+        'waiting': '待接单',
+        'delivering': '配送中',
+        'completed': '已完成'
+    };
+    return statusMap[status] || status;
+}
+
+function getStatusColor(status) {
+    const colorMap = {
+        'unpaid': 'bg-red-100 text-red-600',
+        'waiting': 'bg-yellow-100 text-yellow-600',
+        'delivering': 'bg-blue-100 text-blue-600',
+        'completed': 'bg-green-100 text-green-600'
+    };
+    return colorMap[status] || 'bg-gray-100 text-gray-600';
+}
+
+function renderAllOrders(filter = '全部') {
+    const orderList = document.getElementById('allOrdersList');
+    const emptyOrders = document.getElementById('emptyOrders');
+    
+    let filteredOrders = userOrders;
+    if (filter !== '全部') {
+        const statusMap = {
+            '待付款': 'unpaid',
+            '待接单': 'waiting',
+            '配送中': 'delivering',
+            '已完成': 'completed'
+        };
+        filteredOrders = userOrders.filter(o => o.status === statusMap[filter]);
+    }
+    
+    if (filteredOrders.length === 0) {
+        orderList.innerHTML = '';
+        emptyOrders.style.display = 'block';
+        return;
+    }
+    
+    emptyOrders.style.display = 'none';
+    orderList.innerHTML = filteredOrders.map(order => `
+        <div class="bg-white rounded-2xl shadow-lg p-4">
+            <div class="flex items-center justify-between mb-3">
+                <span class="font-semibold">订单 #${order.id}</span>
+                <span class="text-xs ${getStatusColor(order.status)} px-2 py-1 rounded-full">${getStatusText(order.status)}</span>
+            </div>
+            <div class="text-gray-600 text-sm mb-2">${order.foodName}</div>
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                <span class="material-icons text-xs">location_on</span>
+                <span>${order.address}</span>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-red-500 font-bold">¥${order.price.toFixed(2)}</span>
+                ${order.status === 'unpaid' ? `
+                    <button onclick="payOrder(${order.id})" class="bg-red-500 text-white px-4 py-1.5 rounded-xl text-sm">
+                        去支付
+                    </button>
+                ` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+function payOrder(orderId) {
+    const order = userOrders.find(o => o.id === orderId);
+    if (!order || order.status !== 'unpaid') return;
+    
+    if (!currentUser) {
+        showToast('请先登录');
+        return;
+    }
+    
+    const currentBalance = currentUser.balance || 0;
+    if (currentBalance < order.price) {
+        const deficit = (order.price - currentBalance).toFixed(2);
+        showToast(`余额不足，还差¥${deficit}，请先充值`);
+        setTimeout(() => {
+            renderTransactions();
+            showPage('walletPage');
+        }, 1500);
+        return;
+    }
+    
+    currentUser.balance = currentBalance - order.price;
+    const userIndex = users.findIndex(u => u.phone === currentUser.phone);
+    if (userIndex !== -1) {
+        users[userIndex] = currentUser;
+    }
+    
+    saveUsers();
+    saveCurrentUser(currentUser);
+    addTransaction('订单支付', -order.price);
+    updateBalanceDisplay();
+    updateProfile();
+    
+    order.status = 'waiting';
+    
+    const newOrder = {
+        id: orders.length + 1,
+        foodName: order.foodName,
+        price: order.price,
+        address: order.address,
+        phone: order.phone,
+        status: 'waiting',
+        distance: Math.random() > 0.5 ? '0.8km' : '1.2km',
+        tips: Math.floor(Math.random() * 3) + 2,
+        userId: currentUser.phone
+    };
+    
+    orders.push(newOrder);
+    saveOrders();
+    
+    saveUserOrders();
+    updateOrderStats();
+    renderAllOrders();
+    renderOrderList();
+    
+    showToast('支付成功，等待骑手接单');
 }
 
 function renderFoodList(category = '全部') {
@@ -655,14 +808,14 @@ document.addEventListener('DOMContentLoaded', () => {
         updateBalanceDisplay();
         updateProfile();
         
-        // 创建订单（已支付，状态为配送中）
+        // 创建订单（已支付，状态为待接单）
         const newOrder = {
             id: orders.length + 1,
             foodName: cart.map(item => `${item.name} x${item.quantity}`).join(' + '),
             price: totalAmount,
             address: '用户地址',
             phone: currentUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'),
-            status: 'delivering',
+            status: 'waiting',
             distance: Math.random() > 0.5 ? '0.8km' : '1.2km',
             tips: Math.floor(Math.random() * 3) + 2,
             userId: currentUser.phone
@@ -671,10 +824,11 @@ document.addEventListener('DOMContentLoaded', () => {
         orders.push(newOrder);
         saveOrders();
         
-        // 添加到用户订单列表（配送中）
+        // 移除待付款订单并添加新的待接单订单
+        userOrders = userOrders.filter(o => !(o.status === 'unpaid' && o.userId === currentUser.phone));
         userOrders.push({
             ...newOrder,
-            status: 'delivering'
+            status: 'waiting'
         });
         saveUserOrders();
         updateOrderStats();
@@ -684,7 +838,10 @@ document.addEventListener('DOMContentLoaded', () => {
         saveCart();
         updateCartUI();
         document.getElementById('cartPanel').style.display = 'none';
-        showToast('订单支付成功，等待骑手配送');
+        showToast('订单提交成功，等待骑手接单');
+        
+        // 刷新接单页面的订单列表
+        renderOrderList();
     });
 
     document.getElementById('refreshOrders').addEventListener('click', () => {
@@ -798,5 +955,26 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('closeGuide').addEventListener('click', () => {
         document.getElementById('guideModal').style.display = 'none';
         localStorage.setItem('campusGuideShown', 'true');
+    });
+
+    document.getElementById('viewAllOrders').addEventListener('click', () => {
+        renderAllOrders('全部');
+        showPage('ordersPage');
+    });
+
+    document.getElementById('backFromOrders').addEventListener('click', () => {
+        showPage('profilePage');
+    });
+
+    document.querySelectorAll('.order-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.order-tab').forEach(b => {
+                b.classList.remove('active', 'bg-red-500', 'text-white');
+                b.classList.add('bg-gray-100', 'text-gray-600');
+            });
+            btn.classList.add('active', 'bg-red-500', 'text-white');
+            btn.classList.remove('bg-gray-100', 'text-gray-600');
+            renderAllOrders(btn.textContent);
+        });
     });
 });
