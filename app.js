@@ -255,6 +255,7 @@ function renderOrderList() {
     const orderList = document.getElementById('orderList');
     const emptyOrder = document.getElementById('emptyOrder');
     
+    // 只显示等待接单的订单
     const waitingOrders = orders.filter(o => o.status === 'waiting');
     
     if (waitingOrders.length === 0) {
@@ -298,9 +299,18 @@ function renderOrderList() {
 function acceptOrder(orderId) {
     const order = orders.find(o => o.id === orderId);
     if (order) {
-        order.status = 'accepted';
+        order.status = 'delivering';
         riderStats.todayOrders++;
         riderStats.todayIncome += order.tips;
+        
+        // 更新用户订单状态为配送中
+        const userOrder = userOrders.find(uo => uo.id === orderId);
+        if (userOrder) {
+            userOrder.status = 'delivering';
+            saveUserOrders();
+            updateOrderStats();
+        }
+        
         saveOrders();
         saveRiderStats();
         updateRiderStats();
@@ -319,6 +329,22 @@ function settleRiderIncome() {
         showToast('请先登录');
         return;
     }
+    
+    // 将配送中的订单标记为已完成
+    const deliveringOrders = orders.filter(o => o.status === 'delivering');
+    deliveringOrders.forEach(order => {
+        order.status = 'completed';
+        
+        // 更新用户订单状态
+        const userOrder = userOrders.find(uo => uo.id === order.id);
+        if (userOrder) {
+            userOrder.status = 'completed';
+        }
+    });
+    
+    saveOrders();
+    saveUserOrders();
+    updateOrderStats();
     
     currentUser.balance = (currentUser.balance || 0) + riderStats.todayIncome;
     
@@ -365,7 +391,7 @@ function updateBalanceDisplay() {
 
 function updateOrderStats() {
     const unpaid = userOrders.filter(o => o.status === 'unpaid').length;
-    const pending = userOrders.filter(o => o.status === 'pending').length;
+    const pending = userOrders.filter(o => o.status === 'waiting').length;
     const delivering = userOrders.filter(o => o.status === 'delivering').length;
     const completed = userOrders.filter(o => o.status === 'completed').length;
     
@@ -409,6 +435,13 @@ function addTransaction(type, amount) {
     renderTransactions();
 }
 
+function checkGuide() {
+    const guideShown = localStorage.getItem('campusGuideShown');
+    if (!guideShown && currentUser) {
+        document.getElementById('guideModal').style.display = 'flex';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     loadUsers();
     loadCart();
@@ -440,6 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
             saveCurrentUser(user);
             showPage('rolePage');
             updateProfile();
+            checkGuide();
         } else {
             showToast('账号或密码错误');
         }
@@ -578,6 +612,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
+        const cartPanel = document.getElementById('cartPanel');
+        cartPanel.style.display = cartPanel.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+        if (cart.length === 0) {
+            showToast('购物车为空');
+            return;
+        }
+        
         if (!currentUser) {
             showToast('请先登录');
             return;
@@ -597,6 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
+        // 扣款
         currentUser.balance = currentBalance - totalAmount;
         
         const userIndex = users.findIndex(u => u.phone === currentUser.phone);
@@ -610,13 +655,14 @@ document.addEventListener('DOMContentLoaded', () => {
         updateBalanceDisplay();
         updateProfile();
         
+        // 创建订单（已支付，状态为配送中）
         const newOrder = {
             id: orders.length + 1,
             foodName: cart.map(item => `${item.name} x${item.quantity}`).join(' + '),
             price: totalAmount,
             address: '用户地址',
             phone: currentUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'),
-            status: 'waiting',
+            status: 'delivering',
             distance: Math.random() > 0.5 ? '0.8km' : '1.2km',
             tips: Math.floor(Math.random() * 3) + 2,
             userId: currentUser.phone
@@ -625,18 +671,20 @@ document.addEventListener('DOMContentLoaded', () => {
         orders.push(newOrder);
         saveOrders();
         
+        // 添加到用户订单列表（配送中）
         userOrders.push({
             ...newOrder,
-            status: 'pending'
+            status: 'delivering'
         });
         saveUserOrders();
         updateOrderStats();
         
+        // 清空购物车
         cart = [];
         saveCart();
         updateCartUI();
         document.getElementById('cartPanel').style.display = 'none';
-        showToast('订单提交成功，等待骑手接单');
+        showToast('订单支付成功，等待骑手配送');
     });
 
     document.getElementById('refreshOrders').addEventListener('click', () => {
@@ -745,5 +793,10 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             showPage('rolePage');
         }, 1500);
+    });
+
+    document.getElementById('closeGuide').addEventListener('click', () => {
+        document.getElementById('guideModal').style.display = 'none';
+        localStorage.setItem('campusGuideShown', 'true');
     });
 });

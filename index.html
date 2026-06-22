@@ -215,10 +215,13 @@
                 </button>
             </div>
             <div id="cartItems" class="space-y-3 mb-4 max-h-48 overflow-y-auto"></div>
-            <div class="border-t pt-3 flex items-center justify-between">
+            <div class="border-t pt-3 flex items-center justify-between mb-3">
                 <span>总计</span>
                 <span class="text-red-500 font-bold">¥<span id="cartTotal">0</span></span>
             </div>
+            <button id="checkoutBtn" class="w-full bg-gradient-to-r from-red-500 to-orange-400 text-white py-3 rounded-xl font-medium">
+                结算订单
+            </button>
         </div>
     </div>
 
@@ -451,6 +454,49 @@
             <span class="material-icons text-base">person</span>
             <span class="text-xs">我的</span>
         </button>
+    </div>
+
+    <div id="guideModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" style="display: none;">
+        <div class="bg-white rounded-2xl p-6 mx-6 max-w-sm">
+            <div class="text-center mb-4">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span class="material-icons text-red-500 text-3xl">info</span>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800">欢迎使用校园跑腿小助手</h2>
+            </div>
+            <div class="space-y-4 text-sm text-gray-600">
+                <div class="flex gap-3">
+                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span class="material-icons text-red-500 text-sm">store</span>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">点餐</h3>
+                        <p>浏览美食，加入购物车，结算后等待骑手配送</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span class="material-icons text-blue-500 text-sm">motorcycle</span>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">接单</h3>
+                        <p>查看待接订单，接单后配送，结算收入到钱包</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span class="material-icons text-green-500 text-sm">person</span>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">我的</h3>
+                        <p>管理订单、钱包余额、查看交易记录</p>
+                    </div>
+                </div>
+            </div>
+            <button id="closeGuide" class="w-full mt-6 bg-gradient-to-r from-red-500 to-orange-400 text-white py-3 rounded-xl font-medium">
+                开始使用
+            </button>
+        </div>
     </div>
 
     <script src="app.js"></script>
