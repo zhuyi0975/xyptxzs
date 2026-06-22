@@ -301,13 +301,45 @@ function acceptOrder(orderId) {
         order.status = 'accepted';
         riderStats.todayOrders++;
         riderStats.todayIncome += order.tips;
-        riderStats.totalBalance += order.tips;
         saveOrders();
         saveRiderStats();
         updateRiderStats();
         showToast('接单成功！');
         renderOrderList();
     }
+}
+
+function settleRiderIncome() {
+    if (riderStats.todayIncome <= 0) {
+        showToast('暂无可结算的收入');
+        return;
+    }
+    
+    if (!currentUser) {
+        showToast('请先登录');
+        return;
+    }
+    
+    currentUser.balance = (currentUser.balance || 0) + riderStats.todayIncome;
+    
+    const userIndex = users.findIndex(u => u.phone === currentUser.phone);
+    if (userIndex !== -1) {
+        users[userIndex] = currentUser;
+    }
+    
+    saveUsers();
+    saveCurrentUser(currentUser);
+    addTransaction('骑手收入', riderStats.todayIncome);
+    
+    riderStats.totalBalance += riderStats.todayIncome;
+    const settledAmount = riderStats.todayIncome;
+    riderStats.todayIncome = 0;
+    
+    saveRiderStats();
+    updateRiderStats();
+    updateBalanceDisplay();
+    
+    showToast(`结算成功！+¥${settledAmount}`);
 }
 
 function updateRiderStats() {
@@ -546,34 +578,59 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        
-        if (currentUser && currentUser.balance < totalAmount) {
-            showToast('余额不足，请先充值');
+        if (!currentUser) {
+            showToast('请先登录');
             return;
         }
         
-        if (currentUser) {
-            currentUser.balance -= totalAmount;
-            saveUsers();
-            saveCurrentUser(currentUser);
-            addTransaction('订单支付', -totalAmount);
-            updateBalanceDisplay();
+        const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const currentBalance = currentUser.balance || 0;
+        
+        if (currentBalance < totalAmount) {
+            const deficit = (totalAmount - currentBalance).toFixed(2);
+            showToast(`余额不足，还差¥${deficit}，请先充值`);
+            
+            setTimeout(() => {
+                renderTransactions();
+                showPage('walletPage');
+            }, 1500);
+            return;
         }
+        
+        currentUser.balance = currentBalance - totalAmount;
+        
+        const userIndex = users.findIndex(u => u.phone === currentUser.phone);
+        if (userIndex !== -1) {
+            users[userIndex] = currentUser;
+        }
+        
+        saveUsers();
+        saveCurrentUser(currentUser);
+        addTransaction('订单支付', -totalAmount);
+        updateBalanceDisplay();
+        updateProfile();
         
         const newOrder = {
             id: orders.length + 1,
             foodName: cart.map(item => `${item.name} x${item.quantity}`).join(' + '),
             price: totalAmount,
             address: '用户地址',
-            phone: currentUser ? currentUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') : '138****8888',
+            phone: currentUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'),
             status: 'waiting',
             distance: Math.random() > 0.5 ? '0.8km' : '1.2km',
-            tips: Math.floor(Math.random() * 3) + 2
+            tips: Math.floor(Math.random() * 3) + 2,
+            userId: currentUser.phone
         };
         
         orders.push(newOrder);
         saveOrders();
+        
+        userOrders.push({
+            ...newOrder,
+            status: 'pending'
+        });
+        saveUserOrders();
+        updateOrderStats();
         
         cart = [];
         saveCart();
@@ -585,6 +642,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('refreshOrders').addEventListener('click', () => {
         renderOrderList();
         showToast('已刷新订单列表');
+    });
+
+    document.getElementById('settleBtn').addEventListener('click', () => {
+        settleRiderIncome();
     });
 
     document.getElementById('openWallet').addEventListener('click', () => {
