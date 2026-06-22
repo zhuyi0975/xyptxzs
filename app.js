@@ -190,6 +190,32 @@ function updateQuantity(foodId, delta) {
         }
         saveCart();
         updateCartUI();
+        
+        // 更新待付款订单
+        if (currentUser) {
+            userOrders = userOrders.filter(o => !(o.status === 'unpaid' && o.userId === currentUser.phone));
+            
+            cart.forEach(item => {
+                for (let i = 0; i < item.quantity; i++) {
+                    const unpaidOrder = {
+                        id: Date.now() + i,
+                        foodName: `${item.name} x1`,
+                        price: item.price,
+                        address: '用户地址',
+                        phone: currentUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'),
+                        status: 'unpaid',
+                        distance: '0km',
+                        tips: 0,
+                        userId: currentUser.phone,
+                        foodId: item.id
+                    };
+                    userOrders.push(unpaidOrder);
+                }
+            });
+            
+            saveUserOrders();
+            updateOrderStats();
+        }
     }
 }
 
@@ -203,34 +229,32 @@ function addToCart(food) {
     saveCart();
     updateCartUI();
     
-    // 检查是否已有待付款订单，没有则创建
+    // 更新待付款订单：购物车中有几份食物就有几单待付款
     if (currentUser) {
-        const hasUnpaidOrder = userOrders.some(o => o.status === 'unpaid' && o.userId === currentUser.phone);
-        if (!hasUnpaidOrder && cart.length > 0) {
-            const unpaidOrder = {
-                id: Date.now(),
-                foodName: cart.map(item => `${item.name} x${item.quantity}`).join(' + '),
-                price: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
-                address: '用户地址',
-                phone: currentUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'),
-                status: 'unpaid',
-                distance: '0km',
-                tips: 0,
-                userId: currentUser.phone
-            };
-            userOrders.push(unpaidOrder);
-            saveUserOrders();
-            updateOrderStats();
-        } else if (hasUnpaidOrder) {
-            // 更新现有待付款订单信息
-            const unpaidOrder = userOrders.find(o => o.status === 'unpaid' && o.userId === currentUser.phone);
-            if (unpaidOrder) {
-                unpaidOrder.foodName = cart.map(item => `${item.name} x${item.quantity}`).join(' + ');
-                unpaidOrder.price = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-                saveUserOrders();
-                updateOrderStats();
+        // 先删除该用户所有待付款订单
+        userOrders = userOrders.filter(o => !(o.status === 'unpaid' && o.userId === currentUser.phone));
+        
+        // 根据购物车内容创建待付款订单（每个商品一份）
+        cart.forEach(item => {
+            for (let i = 0; i < item.quantity; i++) {
+                const unpaidOrder = {
+                    id: Date.now() + i,
+                    foodName: `${item.name} x1`,
+                    price: item.price,
+                    address: '用户地址',
+                    phone: currentUser.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2'),
+                    status: 'unpaid',
+                    distance: '0km',
+                    tips: 0,
+                    userId: currentUser.phone,
+                    foodId: item.id
+                };
+                userOrders.push(unpaidOrder);
             }
-        }
+        });
+        
+        saveUserOrders();
+        updateOrderStats();
     }
     
     showToast('已添加到购物车');
@@ -296,26 +320,63 @@ function renderAllOrders(filter = '全部') {
     
     emptyOrders.style.display = 'none';
     orderList.innerHTML = filteredOrders.map(order => `
-        <div class="bg-white rounded-2xl shadow-lg p-4">
-            <div class="flex items-center justify-between mb-3">
-                <span class="font-semibold">订单 #${order.id}</span>
-                <span class="text-xs ${getStatusColor(order.status)} px-2 py-1 rounded-full">${getStatusText(order.status)}</span>
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden order-card" data-order-id="${order.id}">
+            <div class="p-4 cursor-pointer">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-semibold">订单 #${order.id}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs ${getStatusColor(order.status)} px-2 py-1 rounded-full">${getStatusText(order.status)}</span>
+                        <span class="material-icons text-gray-400 text-sm transition-transform">chevron_right</span>
+                    </div>
+                </div>
+                <div class="text-gray-600 text-sm mb-2">${order.foodName}</div>
+                <div class="flex items-center justify-between">
+                    <span class="text-red-500 font-bold">¥${order.price.toFixed(2)}</span>
+                    ${order.status === 'unpaid' ? `
+                        <button onclick="payOrder(${order.id})" class="bg-red-500 text-white px-4 py-1.5 rounded-xl text-sm">
+                            去支付
+                        </button>
+                    ` : ''}
+                </div>
             </div>
-            <div class="text-gray-600 text-sm mb-2">${order.foodName}</div>
-            <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
-                <span class="material-icons text-xs">location_on</span>
-                <span>${order.address}</span>
-            </div>
-            <div class="flex items-center justify-between">
-                <span class="text-red-500 font-bold">¥${order.price.toFixed(2)}</span>
-                ${order.status === 'unpaid' ? `
-                    <button onclick="payOrder(${order.id})" class="bg-red-500 text-white px-4 py-1.5 rounded-xl text-sm">
-                        去支付
-                    </button>
-                ` : ''}
+            <div class="px-4 pb-4 order-detail hidden">
+                <div class="border-t pt-4 space-y-2">
+                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <span class="material-icons text-xs">location_on</span>
+                        <span>${order.address}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <span class="material-icons text-xs">phone</span>
+                        <span>${order.phone}</span>
+                    </div>
+                    ${order.distance !== '0km' ? `
+                        <div class="flex items-center gap-2 text-xs text-gray-500">
+                            <span class="material-icons text-xs">directions_walk</span>
+                            <span>${order.distance}</span>
+                        </div>
+                    ` : ''}
+                    ${order.tips > 0 ? `
+                        <div class="flex items-center gap-2 text-xs text-gray-500">
+                            <span class="material-icons text-xs">tip</span>
+                            <span>配送费 ¥${order.tips}</span>
+                        </div>
+                    ` : ''}
+                </div>
             </div>
         </div>
     `).join('');
+    
+    // 添加点击展开/收起效果
+    document.querySelectorAll('.order-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'BUTTON') {
+                const detail = this.querySelector('.order-detail');
+                const icon = this.querySelector('.material-icons');
+                detail.classList.toggle('hidden');
+                icon.style.transform = detail.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(90deg)';
+            }
+        });
+    });
 }
 
 function payOrder(orderId) {
@@ -824,7 +885,7 @@ document.addEventListener('DOMContentLoaded', () => {
         orders.push(newOrder);
         saveOrders();
         
-        // 移除待付款订单并添加新的待接单订单
+        // 移除待付款订单并添加新的待接单订单（合并为一单）
         userOrders = userOrders.filter(o => !(o.status === 'unpaid' && o.userId === currentUser.phone));
         userOrders.push({
             ...newOrder,
